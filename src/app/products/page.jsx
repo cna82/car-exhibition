@@ -13,9 +13,7 @@ export default function ProductsPage() {
   const [guarantee, setGuarantee] = useState("all");
   const [sort, setSort] = useState("price-desc"); // تغییر: پیش‌فرض → گران‌ترین
   const [page, setPage] = useState(1);
-
   const perPage = 12;
-
   useEffect(() => {
     fetch("/api/products")
       .then((r) => r.json())
@@ -42,15 +40,15 @@ export default function ProductsPage() {
 
   const categories = useMemo(
     () => [...new Set(products.map((p) => p.category ?? "").filter(Boolean))],
-    [products]
+    [products],
   );
   const gearboxes = useMemo(
     () => [...new Set(products.map((p) => p.gearbox ?? "").filter(Boolean))],
-    [products]
+    [products],
   );
   const colors = useMemo(
     () => [...new Set(products.map((p) => p.color ?? "").filter(Boolean))],
-    [products]
+    [products],
   );
 
   const filtered = useMemo(() => {
@@ -61,7 +59,7 @@ export default function ProductsPage() {
       list = list.filter(
         (p) =>
           (p.title || "").toLowerCase().includes(s) ||
-          (p.description || "").toLowerCase().includes(s)
+          (p.description || "").toLowerCase().includes(s),
       );
     }
 
@@ -72,9 +70,12 @@ export default function ProductsPage() {
       list = list.filter((p) => (p.hasGuarantee ? "yes" : "no") === guarantee);
 
     // مرتب‌سازی
-    if (sort === "price-asc") list.sort((a, b) => (a.price || 0) - (b.price || 0));
-    if (sort === "price-desc") list.sort((a, b) => (b.price || 0) - (a.price || 0));
-    if (sort === "model-desc") list.sort((a, b) => Number(b.model || 0) - Number(a.model || 0));
+    if (sort === "price-asc")
+      list.sort((a, b) => (a.price || 0) - (b.price || 0));
+    if (sort === "price-desc")
+      list.sort((a, b) => (b.price || 0) - (a.price || 0));
+    if (sort === "model-desc")
+      list.sort((a, b) => Number(b.model || 0) - Number(a.model || 0));
 
     return list;
   }, [products, search, category, gearbox, color, guarantee, sort]);
@@ -83,7 +84,7 @@ export default function ProductsPage() {
   const currentPage = Math.min(page, totalPages);
   const paginated = filtered.slice(
     (currentPage - 1) * perPage,
-    currentPage * perPage
+    currentPage * perPage,
   );
 
   const CustomSelect = ({ value, onChange, options, placeholder }) => {
@@ -92,7 +93,10 @@ export default function ProductsPage() {
 
     useEffect(() => {
       const handleClickOutside = (event) => {
-        if (containerRef.current && !containerRef.current.contains(event.target)) {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target)
+        ) {
           setIsOpen(false);
         }
       };
@@ -185,7 +189,7 @@ export default function ProductsPage() {
   ];
 
   const sortOptions = [
-    { value: "price-desc", label: "گران‌ترین" },     // اول قرار دادیم
+    { value: "price-desc", label: "گران‌ترین" }, // اول قرار دادیم
     { value: "price-asc", label: "ارزان‌ترین" },
     { value: "model-desc", label: "جدیدترین مدل" },
   ];
@@ -272,42 +276,44 @@ export default function ProductsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
-         {paginated.map((p) => (
-  <Link
-    key={p.id ?? p.slug}
-    href={`/products/${p.slug || p.id}`}
-    className="group rounded-2xl overflow-hidden bg-[#0a0f1c] border border-white/10 hover:border-orange-500/50 transition-all duration-300 hover:shadow-xl relative"
-  >
-    <div className="relative aspect-4/3 overflow-hidden">
-      <Image
-        src={p.imgSrc?.[0] || "/images/placeholder-car.jpg"}
-        alt={p.title || "تصویر خودرو"}
-        fill
-        className="object-cover group-hover:scale-105 transition-transform duration-500"
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-      />
+          {paginated.map((p) => (
+            <Link
+              key={p.id ?? p.slug}
+              href={`/products/${p.slug || p.id}`}
+              className="group rounded-2xl overflow-hidden bg-[#0a0f1c] border border-white/10 hover:border-orange-500/50 transition-all duration-300 hover:shadow-xl relative"
+            >
+              <div className="relative aspect-4/3 overflow-hidden">
+                <Image
+                  src={p.imgSrc?.[0] || "/images/placeholder-car.jpg"}
+                  alt={p.title || "تصویر خودرو"}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
 
-      {/* اضافه کردن بج گارانتی */}
-      {p.hasGuarantee === true || p.hasGuarantee === "yes" || p.hasGuarantee === "دارد" ? (
-        <div className="absolute top-3 right-3 z-10">
-          <span className="inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-bold bg-linear-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-900/40 border border-green-400/30">
-            دارای گارانتی
-            {/* می‌تونی آیکون هم بذاری اگر خواستی */}
-          </span>
-        </div>
-      ) : null}
-    </div>
+                {/* اضافه کردن بج گارانتی */}
+                {p.hasGuarantee === true ||
+                p.hasGuarantee === "yes" ||
+                p.hasGuarantee === "دارد" ? (
+                  <div className="absolute top-3 right-3 z-10">
+                    <span className="inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-bold bg-linear-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-900/40 border border-green-400/30">
+                      دارای گارانتی
+                      {/* می‌تونی آیکون هم بذاری اگر خواستی */}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
 
-    <div className="p-4 text-right">
-      <h3 className="font-bold text-base sm:text-lg line-clamp-1 mb-1">
-        {p.title}
-      </h3>
-      <p className="text-orange-400 text-lg sm:text-xl font-medium">
-        {Number(p.price || 0).toLocaleString("fa-IR")} تومان
-      </p>
-    </div>
-  </Link>
-))}
+              <div className="p-4 text-right">
+                <h3 className="font-bold text-base sm:text-lg line-clamp-1 mb-1">
+                  {p.title}
+                </h3>
+                <p className="text-orange-400 text-lg sm:text-xl font-medium">
+                  {Number(p.price || 0).toLocaleString("fa-IR")} تومان
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
       )}
 

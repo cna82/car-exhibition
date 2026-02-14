@@ -1,16 +1,15 @@
-
 // components/FeaturedProducts.tsx
 
 import Link from "next/link";
 import Image from "next/image";
 
-
-
 async function getRandomProducts() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
   try {
-    const res = await fetch("http://localhost:3000/api/products", {
-      cache: "no-store",           // یا revalidate: 300 اگر کش می‌خوای
-      next: { revalidate: 300 },
+    const res = await fetch(`${apiUrl}/api/products`, {
+      cache: "no-store",
+      next: { revalidate: 3600 * 24 * 7 },
     });
 
     if (!res.ok) throw new Error("Failed to fetch products");
@@ -47,7 +46,7 @@ export default async function FeaturedProducts() {
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row-reverse justify-between items-center mb-10 md:mb-14">
           <h2 className="text-2xl sm:text-4xl  font-black tracking-tight text-center bg-linear-to-r from-amber-200 via-white to-amber-300 bg-clip-text text-transparent mb-4 sm:mb-0">
-             محصولات پر فروش مدرن گالری
+            محصولات پر فروش مدرن گالری
           </h2>
           <Link
             href="/products"

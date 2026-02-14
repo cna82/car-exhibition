@@ -2,10 +2,14 @@ import ClientProductDetail from "@/components/ProductDetail";
 import { notFound } from "next/navigation";
 
 async function getAllProducts() {
+ const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   try {
-    const res = await fetch("http://localhost:3000/api/products", {
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${apiUrl}/api/products`,
+      {
+        cache: "no-store",
+      },
+    );
 
     if (!res.ok) throw new Error("خطا در دریافت محصولات");
 
@@ -22,24 +26,15 @@ export default async function ProductDetailPage({ params }) {
   const resolvedParams = await params;
   const id = Number(resolvedParams.id);
   const products = await getAllProducts();
-  const product = products.find(
-    (p) => Number(p.id) === id
-  );
+  const product = products.find((p) => Number(p.id) === id);
   if (!product) {
     notFound();
   }
   const similarProducts = products.filter(
-    (p) =>
-      p.category === product.category &&
-      Number(p.id) !== id
+    (p) => p.category === product.category && Number(p.id) !== id,
   );
 
   return (
-    <ClientProductDetail
-      product={product}
-      similarProducts={similarProducts}
-    />
+    <ClientProductDetail product={product} similarProducts={similarProducts} />
   );
 }
-
-
