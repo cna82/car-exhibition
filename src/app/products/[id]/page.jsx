@@ -2,14 +2,11 @@ import ClientProductDetail from "@/components/ProductDetail";
 import { notFound } from "next/navigation";
 
 async function getAllProducts() {
- const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   try {
-    const res = await fetch(
-      `${apiUrl}/api/products`,
-      {
-        cache: "no-store",
-      },
-    );
+    const res = await fetch(`${apiUrl}/api/products`, {
+      next: { revalidate: 60*60*24*7 },
+    });
 
     if (!res.ok) throw new Error("خطا در دریافت محصولات");
 

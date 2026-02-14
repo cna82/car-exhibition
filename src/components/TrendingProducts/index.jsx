@@ -8,7 +8,6 @@ async function getRandomProducts() {
 
   try {
     const res = await fetch(`${apiUrl}/api/products`, {
-      cache: "no-store",
       next: { revalidate: 3600 * 24 * 7 },
     });
 
