@@ -11,7 +11,7 @@ export default function ProductsPage() {
   const [gearbox, setGearbox] = useState("all");
   const [color, setColor] = useState("all");
   const [guarantee, setGuarantee] = useState("all");
-  const [sort, setSort] = useState("price-desc"); // تغییر: پیش‌فرض → گران‌ترین
+  const [sort, setSort] = useState("price-desc"); 
   const [page, setPage] = useState(1);
   const perPage = 12;
   useEffect(() => {

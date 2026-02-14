@@ -1,35 +1,64 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 import ClientProductDetail from "@/components/ProductDetail";
-import { notFound } from "next/navigation";
 
-async function getAllProducts() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-  try {
-    const res = await fetch(`${apiUrl}/api/products`, {
-      next: { revalidate: 60*60*24*7 },
-    });
+export default function ProductDetailPage() {
+  const params = useParams();
+  const id = Number(params?.id);
+  const router = useRouter();
 
-    if (!res.ok) throw new Error("خطا در دریافت محصولات");
+  const [product, setProduct] = useState(null);
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const products = await res.json();
+  useEffect(() => {
+    if (!id) {
+      router.push("/products");
+      return;
+    }
 
-    return Array.isArray(products) ? products : [];
-  } catch (error) {
-    console.error("FETCH ERROR:", error);
-    return [];
-  }
-}
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`/api/products`);
+        if (!res.ok) throw new Error("خطا در دریافت محصولات");
 
-export default async function ProductDetailPage({ params }) {
-  const resolvedParams = await params;
-  const id = Number(resolvedParams.id);
-  const products = await getAllProducts();
-  const product = products.find((p) => Number(p.id) === id);
-  if (!product) {
-    notFound();
-  }
-  const similarProducts = products.filter(
-    (p) => p.category === product.category && Number(p.id) !== id,
-  );
+        const products = await res.json();
+        const found = products.find((p) => Number(p.id) === id);
+
+        if (!found) {
+          router.push("/products");
+          return;
+        }
+
+        setProduct(found);
+        setSimilarProducts(
+          products.filter(
+            (p) => p.category === found.category && Number(p.id) !== id,
+          ),
+        );
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        router.push("/products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [id, router]);
+
+  if (loading)
+    return (
+      <div className="w-full bg-slate-900 py-50 text-center text-gray-400">
+        در حال بارگذاری...
+      </div>
+    );
+  if (!product)
+    return (
+      <div className="py-20 text-center text-gray-400">محصول پیدا نشد</div>
+    );
 
   return (
     <ClientProductDetail product={product} similarProducts={similarProducts} />
